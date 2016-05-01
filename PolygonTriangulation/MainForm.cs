@@ -12,6 +12,7 @@ namespace PolygonTriangulation
 {
     public partial class MainForm : Form
     {
+        // TODO: только треугольники без самопересечений
         private Graphics polygonGraphics;
         private PolygonVertexManager vertexManager;
 

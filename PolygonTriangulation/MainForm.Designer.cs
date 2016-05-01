@@ -60,7 +60,7 @@
             this.btnFinishBuilding.Name = "btnFinishBuilding";
             this.btnFinishBuilding.Size = new System.Drawing.Size(156, 23);
             this.btnFinishBuilding.TabIndex = 2;
-            this.btnFinishBuilding.Text = "button1";
+            this.btnFinishBuilding.Text = "Finish building triangle";
             this.btnFinishBuilding.UseVisualStyleBackColor = true;
             this.btnFinishBuilding.Click += new System.EventHandler(this.btnFinishBuilding_Click);
             // 
@@ -74,7 +74,7 @@
             this.Controls.Add(this.btnDoTriangulate);
             this.Controls.Add(this.polygonBox);
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "PolygonTriangulation";
             ((System.ComponentModel.ISupportInitialize)(this.polygonBox)).EndInit();
             this.ResumeLayout(false);
 
