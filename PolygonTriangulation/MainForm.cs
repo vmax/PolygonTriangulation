@@ -12,7 +12,6 @@ namespace PolygonTriangulation
 {
     public partial class MainForm : Form
     {
-        // TODO: только треугольники без самопересечений
         private Graphics polygonGraphics;
         private PolygonVertexManager vertexManager;
 
@@ -20,6 +19,7 @@ namespace PolygonTriangulation
         {
             InitializeComponent();
             polygonGraphics = polygonBox.CreateGraphics();
+            polygonGraphics.ScaleTransform(1f, -1f);
             vertexManager = new PolygonVertexManager(polygonBox);
         }
 
@@ -31,6 +31,11 @@ namespace PolygonTriangulation
         private void btnFinishBuilding_Click(object sender, EventArgs e)
         {
             vertexManager.finishBuilding();
+        }
+
+        private void btnDoTriangulate_Click(object sender, EventArgs e)
+        {
+            vertexManager.performTriangulation();
         }
     }
 }

@@ -25,7 +25,7 @@ namespace PolygonTriangulation
 
             if (vertices.Count > 2 && checkCrossing(pv))
             {
-                MessageBox.Show("Добавленная вершина создаст в прямоугольнике самопересечение!", "Ошибка");     
+                MessageBox.Show("Добавленная вершина создаст в прямоугольнике самопересечение!", "Ошибка");
                 return;
             };
 
@@ -34,6 +34,8 @@ namespace PolygonTriangulation
             if (vertices.Count > 1)
             {
                 PolygonVertex prevVertex = vertices[vertices.Count - 2];
+                pv.neighboor1 = prevVertex;
+                prevVertex.neighboor2 = pv;
                 graphics.DrawLine(Pens.Black, pv.X, pv.Y, prevVertex.X, prevVertex.Y);
             }
         }
@@ -67,6 +69,37 @@ namespace PolygonTriangulation
 
         public void performVerticesClassification()          
         {
+            foreach (PolygonVertex v in vertices)
+            {
+                v.classifySelf();
+            }
+            graphics = polygonBox.CreateGraphics();
+            foreach (PolygonVertex v in vertices)
+            {
+                Brush b = Brushes.Black;
+                switch(v.type)
+                {
+                    case PolygonVertexType.start:
+                        b = Brushes.Yellow;
+                        break;
+                    case PolygonVertexType.split:
+                        b = Brushes.Red;
+                        break;
+                    case PolygonVertexType.end:
+                        b = Brushes.Green;
+                        break;
+                    case PolygonVertexType.merge:
+                        b = Brushes.Blue;
+                        break;
+                    case PolygonVertexType.regular:
+                        b = Brushes.Black;
+                        break;
+                }
+                graphics.FillEllipse(b, v.X, v.Y, 10, 10);
+
+            }
+            // TODO: самопересечение которое образуется при звершении построения
+            // TODO: почему координаты перевёрнуты (проверить на наборе точек>)
 
         }
 
@@ -83,6 +116,11 @@ namespace PolygonTriangulation
             return false;
         }
 
+        public void performTriangulation ()
+        {
+            performVerticesClassification();
+
+        }
 
         public void finishBuilding()
         {
@@ -92,6 +130,8 @@ namespace PolygonTriangulation
             first = vertices[0];
             last = vertices[vertices.Count - 1];
             graphics.DrawLine(Pens.Black, first.X, first.Y, last.X, last.Y);
+            last.neighboor2 = first;
+            first.neighboor1 = last;
             //polygonBox.Enabled = false;
         }
     }

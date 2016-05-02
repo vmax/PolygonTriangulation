@@ -53,10 +53,11 @@
             this.btnDoTriangulate.TabIndex = 1;
             this.btnDoTriangulate.Text = "Triangulate!";
             this.btnDoTriangulate.UseVisualStyleBackColor = true;
+            this.btnDoTriangulate.Click += new System.EventHandler(this.btnDoTriangulate_Click);
             // 
             // btnFinishBuilding
             // 
-            this.btnFinishBuilding.Location = new System.Drawing.Point(606, 12);
+            this.btnFinishBuilding.Location = new System.Drawing.Point(605, 12);
             this.btnFinishBuilding.Name = "btnFinishBuilding";
             this.btnFinishBuilding.Size = new System.Drawing.Size(156, 23);
             this.btnFinishBuilding.TabIndex = 2;
