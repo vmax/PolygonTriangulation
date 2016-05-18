@@ -60,7 +60,7 @@ namespace PolygonTriangulation
             if (neighboor1 < this && neighboor2 < this)
             {
                 // start or split?
-                type = (angle < Math.PI) ? PolygonVertexType.split : PolygonVertexType.split;            
+                type = (angle < Math.PI) ? PolygonVertexType.start : PolygonVertexType.split;           
             }
             else if (neighboor1 > this && neighboor2 > this)
             {

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PolygonTriangulation
@@ -13,6 +10,12 @@ namespace PolygonTriangulation
         List<PolygonVertex> vertices;
         PictureBox polygonBox;
         Graphics graphics;
+
+        private void getGraphics()
+        {
+            graphics = polygonBox.CreateGraphics();
+        }
+
         public PolygonVertexManager(PictureBox polygonPictureBox)
         {
             vertices = new List<PolygonVertex> ();
@@ -21,8 +24,7 @@ namespace PolygonTriangulation
         public void addVertex(PolygonVertex pv)
         {
             // FIXME: probably we don't want to get a new graphics on each painting
-            graphics = polygonBox.CreateGraphics();
-
+            getGraphics();
             if (vertices.Count > 2 && checkCrossing(pv))
             {
                 MessageBox.Show("Добавленная вершина создаст в прямоугольнике самопересечение!", "Ошибка");
@@ -30,13 +32,13 @@ namespace PolygonTriangulation
             };
 
             vertices.Add(pv);
-            graphics.FillEllipse(Brushes.Black, pv.X, pv.Y, 5, 5);
+            graphics.FillEllipse(Brushes.Black, pv.X, (polygonBox.Height - pv.Y), 5, 5);
             if (vertices.Count > 1)
             {
                 PolygonVertex prevVertex = vertices[vertices.Count - 2];
                 pv.neighboor1 = prevVertex;
                 prevVertex.neighboor2 = pv;
-                graphics.DrawLine(Pens.Black, pv.X, pv.Y, prevVertex.X, prevVertex.Y);
+                graphics.DrawLine(Pens.Black, pv.X, polygonBox.Height - pv.Y, prevVertex.X, polygonBox.Height - prevVertex.Y);
             }
         }
 
@@ -58,7 +60,7 @@ namespace PolygonTriangulation
             if (c > d) Swap(ref c, ref d);
             return Math.Max(a, c) <= Math.Min(b, d);
         }
-
+        
         public static bool intersect(PolygonVertex a, PolygonVertex b, PolygonVertex c, PolygonVertex d)
         {
             return intersect_1(a.X, b.X, c.X, d.X)
@@ -73,7 +75,7 @@ namespace PolygonTriangulation
             {
                 v.classifySelf();
             }
-            graphics = polygonBox.CreateGraphics();
+            getGraphics();
             foreach (PolygonVertex v in vertices)
             {
                 Brush b = Brushes.Black;
@@ -95,11 +97,10 @@ namespace PolygonTriangulation
                         b = Brushes.Black;
                         break;
                 }
-                graphics.FillEllipse(b, v.X, v.Y, 10, 10);
+                graphics.FillEllipse(b, v.X, polygonBox.Height - v.Y, 10, 10);
 
             }
             // TODO: самопересечение которое образуется при звершении построения
-            // TODO: почему координаты перевёрнуты (проверить на наборе точек>)
 
         }
 
@@ -124,15 +125,15 @@ namespace PolygonTriangulation
 
         public void finishBuilding()
         {
-            // FIXME: probably we don't want to get a new graphics on each painting
-            graphics = polygonBox.CreateGraphics();
+            getGraphics();
             PolygonVertex first, last;
             first = vertices[0];
             last = vertices[vertices.Count - 1];
-            graphics.DrawLine(Pens.Black, first.X, first.Y, last.X, last.Y);
+            graphics.DrawLine(Pens.Black, first.X, polygonBox.Height -  first.Y, last.X, polygonBox.Height - last.Y);
             last.neighboor2 = first;
             first.neighboor1 = last;
             //polygonBox.Enabled = false;
+            // FIXME: disable but don't clear drawed things
         }
     }
 }

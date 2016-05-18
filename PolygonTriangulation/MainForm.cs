@@ -12,20 +12,20 @@ namespace PolygonTriangulation
 {
     public partial class MainForm : Form
     {
-        private Graphics polygonGraphics;
         private PolygonVertexManager vertexManager;
 
         public MainForm()
         {
             InitializeComponent();
-            polygonGraphics = polygonBox.CreateGraphics();
-            polygonGraphics.ScaleTransform(1f, -1f);
             vertexManager = new PolygonVertexManager(polygonBox);
+
         }
 
         private void polygonBox_MouseClick(object sender, MouseEventArgs e)
         {
-            vertexManager.addVertex(new PolygonVertex(e.X, e.Y));
+            // MessageBox.Show();
+            listBox1.Items.Add(String.Format("X = {0} Y = {1}\n", e.X, polygonBox.Height - e.Y));
+            vertexManager.addVertex(new PolygonVertex(e.X, polygonBox.Height - e.Y));
         }
 
         private void btnFinishBuilding_Click(object sender, EventArgs e)
@@ -36,6 +36,11 @@ namespace PolygonTriangulation
         private void btnDoTriangulate_Click(object sender, EventArgs e)
         {
             vertexManager.performTriangulation();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            vertexManager.addVertex(new PolygonVertex(float.Parse(textBox1.Text), float.Parse(textBox2.Text)));
         }
     }
 }
