@@ -18,7 +18,6 @@ namespace PolygonTriangulation
         {
             InitializeComponent();
             vertexManager = new PolygonVertexManager(polygonBox);
-
         }
 
         private void polygonBox_MouseClick(object sender, MouseEventArgs e)
@@ -40,7 +39,7 @@ namespace PolygonTriangulation
 
         private void button1_Click(object sender, EventArgs e)
         {
-            vertexManager.addVertex(new PolygonVertex(float.Parse(textBox1.Text), float.Parse(textBox2.Text)));
+          //  vertexManager.addVertex(new PolygonVertex(float.Parse(textBox1.Text), float.Parse(textBox2.Text)));
         }
     }
 }
