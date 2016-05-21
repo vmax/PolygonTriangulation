@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace PolygonTriangulation
@@ -10,6 +11,7 @@ namespace PolygonTriangulation
     {
         List<PolygonVertex> vertices;
         List<PolygonEdge> edges;
+        List<PolygonEdge> addedDiagonals;
         PictureBox polygonBox;
         Graphics graphics;
 
@@ -23,6 +25,7 @@ namespace PolygonTriangulation
         {
             vertices = new List<PolygonVertex> ();
             edges = new List<PolygonEdge>();
+            addedDiagonals = new List<PolygonEdge>();
             polygonBox = polygonPictureBox;   
         }
         public void addVertex(PolygonVertex pv)
@@ -75,11 +78,15 @@ namespace PolygonTriangulation
         }
         #endregion
 
-        public void insertDiagonal(PolygonVertex a, PolygonVertex b)
+        public void insertDiagonal(PolygonVertex a, PolygonVertex b, Pen pen = null)
         {
-            // FIXME: somehow store diagonal in edges list
+            if (pen == null)
+            {
+                pen = Pens.Red;
+            }
             getGraphics();
-            graphics.DrawLine(Pens.Red, a.X, polygonBox.Height - a.Y, b.X, polygonBox.Height - b.Y);
+            graphics.DrawLine(pen, a.X, polygonBox.Height - a.Y, b.X, polygonBox.Height - b.Y);
+            addedDiagonals.Add(new PolygonEdge(a, b));
         }
 
         public void performVerticesClassification()          
@@ -134,12 +141,17 @@ namespace PolygonTriangulation
         {
             performVerticesClassification();
             monotonePolygonPartition();
+            var mp = splitIntoMonotonous();
+            //triangulateMonotonePolygon();
         }
 
+        private void fillPolygon(List<PolygonVertex> polygon, Brush b)
+        {
+            graphics.FillPolygon(b, polygon.Select(v => new Point(v.X, polygonBox.Height - v.Y)).ToArray());
+        }
 
         public void monotonePolygonPartition()
-        {
-         
+        {  
             // needed data structures
             ConcurrentPriorityQueue.ConcurrentPriorityQueue<PolygonVertex, double> queue = constructVertexQueue();
             // using hashset instead of bst
@@ -210,6 +222,7 @@ namespace PolygonTriangulation
             }
             return ints;
         }
+
         private void HandleStartVertex(HashSet<PolygonEdge> T, PolygonVertex v)
         {
             PolygonEdge e = findEdgeStartingIn(v);
@@ -313,9 +326,266 @@ namespace PolygonTriangulation
             first.neighboor1 = last;
 
             edges.Add(new PolygonEdge(last, first));
-
-            //polygonBox.Enabled = false;
             // FIXME: disable but don't clear drawed things
         }
+
+        private int LeftTurnPredicate(PolygonVertex a, PolygonVertex b, PolygonVertex c)
+        {
+            return Math.Sign((c.X - a.X) * (b.Y - a.Y) - (c.Y - a.Y) * (b.X - a.X));
+        }
+
+        private void reorderPolygon(List<PolygonVertex> polygon)
+        {
+            for (int i = 0; i < polygon.Count - 1; i++)
+            {
+                polygon[i].index = i + 1;
+                polygon[i+1].index = i + 2;
+                polygon[i].neighboor2 = polygon[i + 1];
+                polygon[i + 1].neighboor1 = polygon[i];
+            }
+            polygon[polygon.Count - 1].index = polygon.Count;
+            polygon[polygon.Count - 1].neighboor2 = polygon[0];
+            polygon[0].neighboor1 = polygon[polygon.Count - 1];
+        }
+
+        private bool sameChain(Dictionary<PolygonVertex, int> chains, PolygonVertex a, PolygonVertex b)
+        {
+            if (a.neighboor1 == b || a.neighboor2 == b)
+            {
+                return true;
+
+            }
+            return chains[a] == chains[b];
+        }
+
+        private void triangulateMonotonePolygon(List<PolygonVertex> polygon)
+        {
+            List<PolygonVertex> V = polygon.OrderByDescending(v => v.Y).ToList();
+            Dictionary<PolygonVertex, int> chains = new Dictionary<PolygonVertex, int>();
+
+            PolygonVertex chainStart = V[0], chainEnd = V.Last(), lc = chainStart.neighboor2, rc = chainStart.neighboor1;
+            while(lc != chainEnd)
+            {
+                chains[lc] = -1; // left chain
+                lc = lc.neighboor2;
+                 
+            }
+
+            while(rc != chainEnd)
+            {
+                chains[rc] = 1; // right chain
+                rc = rc.neighboor1;
+            }
+
+            Stack<PolygonVertex> S = new Stack<PolygonVertex>();
+
+            S.Push(V[0]);
+            S.Push(V[1]);
+
+            for (int j = 2; j < V.Count - 1; j++)
+            {
+                if (!sameChain(chains, V[j], S.Peek()))
+                {
+                    while (S.Count > 0)
+                    {
+                        if (S.Count != 1)
+                        {
+                            insertDiagonal(V[j], S.Peek(), new Pen(Color.SeaGreen, 3f));
+                        }
+                        S.Pop();
+                        
+                    }
+                    S.Push(V[j - 1]);
+                    S.Push(V[j]);
+                }
+                else
+                {
+                    PolygonVertex last = S.Pop();
+                    while (S.Count > 0 && LeftTurnPredicate(V[j], S.Peek(), last) < 0) // check!
+                    {
+                        last = S.Peek();
+                        S.Pop();
+                        insertDiagonal(V[j], last, new Pen(Color.Yellow, 3f));
+                    }
+                    S.Push(last);
+                    S.Push(V[j]);
+                }
+            }
+            S.Pop(); // except the first
+            while (S.Count > 0)
+            {
+                if (S.Count != 1)
+                {
+                    insertDiagonal(V[V.Count - 1], S.Peek(), Pens.Violet); // diag from u_j to all vert on the stack
+                }
+                S.Pop(); // and the last one
+            }
+        }
+
+        private Brush PickBrush()
+        {
+            Brush result = Brushes.Transparent;
+
+            Random rnd = new Random();
+
+            Type brushesType = typeof(Brushes);
+
+            PropertyInfo[] properties = brushesType.GetProperties();
+
+            int random = rnd.Next(properties.Length);
+            result = (Brush)properties[random].GetValue(null, null);
+
+            return result;
+        }
+        private List<List<PolygonVertex>> splitIntoMonotonous()
+        {
+            List<List<PolygonVertex>> monotonePolys = new List<List<PolygonVertex>>();
+
+            
+            addedDiagonals = addedDiagonals.OrderBy(e =>
+            {
+                var i = e.edge1.index;
+                var j = e.edge2.index;
+                return Math.Abs(i-j);
+            }).ToList();
+
+            foreach (PolygonEdge diag in addedDiagonals)
+            {
+                monotonePolys.Add(findMonotones(diag, PickBrush()));
+            }
+            graphics.FillPolygon(Brushes.Red, vertices.Select(c => new Point(c.X, polygonBox.Height - c.Y)).ToArray());
+
+            monotonePolys.Add(vertices);
+
+            return monotonePolys;
+        }
+        private List<PolygonVertex> findMonotones(PolygonEdge diagonal, Brush pen)
+        {
+            PolygonVertex start, end;
+            List<PolygonVertex> vert = new List<PolygonVertex>();
+            if (diagonal.edge1.index < diagonal.edge2.index)
+            {
+                start = diagonal.edge1;
+                end = diagonal.edge2;
+            }
+            else
+            {
+                start = diagonal.edge2;
+                end = diagonal.edge1;
+            }
+
+            PolygonVertex fixedStart = vertices.Find(v => v==start);
+            PolygonVertex fixedEnd = vertices.Find(v => v==end);
+            while (start != end)
+            {
+                vert.Add(start);
+                start = start.neighboor2;
+            }
+            vert.Add(end);
+
+            fixedStart.neighboor2 = fixedEnd;
+            fixedEnd.neighboor1 = fixedStart;
+
+            vertices = vertices.Except(vert.Except(new[] { diagonal.edge1, diagonal.edge2 })).ToList();
+            
+            var points = vert.Select(v => new Point(v.X, polygonBox.Height - v.Y)).ToArray();
+            graphics.FillPolygon(pen, points);
+
+            return vert;
+
+        }
+
+        
+        #region kostyl' velosiped
+        private PolygonVertex getv(int idx)
+        {
+            if (idx < 0)
+            {
+                idx = vertices.Count + idx;
+            }
+            return vertices[idx % vertices.Count];
+        }
+
+        bool convex(PolygonVertex a, PolygonVertex b,
+           PolygonVertex c)
+        {
+            if (__area(a,b,c) < 0)
+                return true;
+            else
+                return false;
+        }
+        /* area:  determines area of triangle formed by three points
+         */
+        double __area(PolygonVertex a, PolygonVertex b, PolygonVertex c)
+        {
+            double areaSum = 0;
+
+            areaSum += a.X * (c.Y - b.Y);
+            areaSum += b.X * (a.Y - c.Y);
+            areaSum += c.X * (b.Y - a.Y);
+
+            /* for actual area, we need to multiple areaSum * 0.5, but we are
+                 * only interested in the sign of the area (+/-)
+                 */
+
+            return areaSum;
+        }
+
+        // 1 выпуклая (convex) -1 впуклая (concave)
+        Dictionary<PolygonVertex, int> classify()
+        {
+            Dictionary<PolygonVertex, int> types = new Dictionary<PolygonVertex, int>();
+
+            for (int i = 0; i <= vertices.Count - 1; i++)
+            {
+                if (convex(getv(i-1), getv(i), getv(i+1)))
+                    {
+                    types[getv(i)] = 1;
+                    }
+                else
+                {
+                    types[getv(i)] = -1;
+                }
+                    
+            }
+
+            return types;
+        }
+
+        private void earclip()
+        {
+
+            Dictionary<PolygonVertex, int> types = new Dictionary<PolygonVertex, int>();
+            PolygonVertex v = getv(0);
+
+
+        }
+
+        
+        #endregion
+        
+       
+
+        /*
+            private void triangulateMonotonePolygon()
+            {
+                List<PolygonVertex> V = vertices.OrderByDescending(v => v.Y).ToList();
+                Stack<PolygonVertex> S = new Stack<PolygonVertex>();
+
+                S.Push(V[0]);
+                S.Push(V[1]);
+
+                for (int i = 3; i < V.Count; i++)
+                {
+                    PolygonVertex v = V[i];
+                    while (S.Count > 0)
+                    {
+                        PolygonVertex vv = S.Peek();
+                        insertDiagonal(vv, v, Pens.Red);
+                        S.Pop();
+                    }
+                    S.Push(v);
+                }
+            }*/
     }
 }

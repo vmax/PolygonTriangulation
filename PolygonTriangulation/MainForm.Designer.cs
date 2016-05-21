@@ -31,9 +31,6 @@
             this.polygonBox = new System.Windows.Forms.PictureBox();
             this.btnDoTriangulate = new System.Windows.Forms.Button();
             this.btnFinishBuilding = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.polygonBox)).BeginInit();
             this.SuspendLayout();
@@ -69,30 +66,6 @@
             this.btnFinishBuilding.UseVisualStyleBackColor = true;
             this.btnFinishBuilding.Click += new System.EventHandler(this.btnFinishBuilding_Click);
             // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(615, 82);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 3;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(615, 108);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 3;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(615, 134);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
@@ -108,9 +81,6 @@
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(774, 450);
             this.Controls.Add(this.listBox1);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.btnFinishBuilding);
             this.Controls.Add(this.btnDoTriangulate);
             this.Controls.Add(this.polygonBox);
@@ -120,7 +90,6 @@
             this.Text = "PolygonTriangulation";
             ((System.ComponentModel.ISupportInitialize)(this.polygonBox)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -129,9 +98,6 @@
         private System.Windows.Forms.PictureBox polygonBox;
         private System.Windows.Forms.Button btnDoTriangulate;
         private System.Windows.Forms.Button btnFinishBuilding;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ListBox listBox1;
     }
 }
