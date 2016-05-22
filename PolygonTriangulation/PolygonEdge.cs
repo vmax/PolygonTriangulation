@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PolygonTriangulation
 {
-    class PolygonEdge
+    public class PolygonEdge
     {
         public Tuple<int, int, int> toLine()
         {

@@ -31,7 +31,6 @@
             this.polygonBox = new System.Windows.Forms.PictureBox();
             this.btnDoTriangulate = new System.Windows.Forms.Button();
             this.btnFinishBuilding = new System.Windows.Forms.Button();
-            this.listBox1 = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.polygonBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -66,21 +65,12 @@
             this.btnFinishBuilding.UseVisualStyleBackColor = true;
             this.btnFinishBuilding.Click += new System.EventHandler(this.btnFinishBuilding_Click);
             // 
-            // listBox1
-            // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(615, 176);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(134, 173);
-            this.listBox1.TabIndex = 5;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(774, 450);
-            this.Controls.Add(this.listBox1);
             this.Controls.Add(this.btnFinishBuilding);
             this.Controls.Add(this.btnDoTriangulate);
             this.Controls.Add(this.polygonBox);
@@ -98,7 +88,6 @@
         private System.Windows.Forms.PictureBox polygonBox;
         private System.Windows.Forms.Button btnDoTriangulate;
         private System.Windows.Forms.Button btnFinishBuilding;
-        private System.Windows.Forms.ListBox listBox1;
     }
 }
 

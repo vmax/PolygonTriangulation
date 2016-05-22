@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PolygonTriangulation
 {
-    enum PolygonVertexType
+    public enum PolygonVertexType
     {
         start,
         end,
@@ -14,15 +14,12 @@ namespace PolygonTriangulation
         split,
         merge
     }
-
-
-    class PolygonVertex
+    public class PolygonVertex
     {
         public static bool operator < (PolygonVertex p, PolygonVertex q)
         {
             return (p.Y < q.Y) || (p.Y == q.Y && p.X > q.X);
         }
-
         public static bool operator >(PolygonVertex p, PolygonVertex q)
         {
             return (p.Y > q.Y) || (p.Y == q.Y && p.X < q.X);
@@ -72,7 +69,6 @@ namespace PolygonTriangulation
                 type = PolygonVertexType.regular;
             }
         }
-
 
         public int index { get; set; }
         public PolygonVertex neighboor1 { get; set;}

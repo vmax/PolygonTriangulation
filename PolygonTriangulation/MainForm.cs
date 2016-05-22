@@ -22,8 +22,6 @@ namespace PolygonTriangulation
 
         private void polygonBox_MouseClick(object sender, MouseEventArgs e)
         {
-            // MessageBox.Show();
-            listBox1.Items.Add(String.Format("X = {0} Y = {1}\n", e.X, polygonBox.Height - e.Y));
             vertexManager.addVertex(new PolygonVertex(e.X, polygonBox.Height - e.Y));
         }
 
@@ -37,9 +35,5 @@ namespace PolygonTriangulation
             vertexManager.performTriangulation();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-          //  vertexManager.addVertex(new PolygonVertex(float.Parse(textBox1.Text), float.Parse(textBox2.Text)));
-        }
     }
 }
