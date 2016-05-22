@@ -18,22 +18,18 @@ namespace PolygonTriangulation
 
         Dictionary<PolygonEdge, PolygonVertex> helpers;
 
-        private void getGraphics()
-        {
-            graphics = polygonBox.CreateGraphics();
-        }
         public PolygonVertexManager(PictureBox polygonPictureBox)
         {
-            vertices = new List<PolygonVertex> ();
+            vertices = new List<PolygonVertex>();
             edges = new List<PolygonEdge>();
             addedDiagonals = new List<PolygonEdge>();
             T = new HashSet<PolygonEdge>();
-            polygonBox = polygonPictureBox;   
+            polygonBox = polygonPictureBox;
+            graphics = polygonBox.CreateGraphics();
         }
+
         public void addVertex(PolygonVertex pv)
         {
-            // FIXME: probably we don't want to get a new graphics on each painting
-            getGraphics();
             if (vertices.Count > 2 && checkCrossing(pv))
             {
                 MessageBox.Show("Добавленная вершина создаст в прямоугольнике самопересечение!", "Ошибка");
@@ -86,7 +82,6 @@ namespace PolygonTriangulation
             {
                 pen = Pens.Red;
             }
-            getGraphics();
             graphics.DrawLine(pen, a.X, polygonBox.Height - a.Y, b.X, polygonBox.Height - b.Y);
             addedDiagonals.Add(new PolygonEdge(a, b));
         }
@@ -164,7 +159,6 @@ namespace PolygonTriangulation
             // helper for edge
             helpers = new Dictionary<PolygonEdge, PolygonVertex>();
 
-            getGraphics();
             while(queue.Count > 0)
             {
                 var vMax = queue.Dequeue();
@@ -316,7 +310,6 @@ namespace PolygonTriangulation
 
         public void finishBuilding()
         {
-            getGraphics();
             PolygonVertex first, last;
             first = vertices[0];
             last = vertices[vertices.Count - 1];
@@ -336,7 +329,6 @@ namespace PolygonTriangulation
         private bool orientation(PolygonVertex a, PolygonVertex b, PolygonVertex c)
         {
             int v = (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X);
-            MessageBox.Show(String.Format("{0} {1} {2} -> {3}", a.index, b.index, c.index, v));
             return v > 0;
         }
 

@@ -36,7 +36,6 @@ namespace PolygonTriangulation
         {
             return pX * qY > qX * pY;
         }
-
         public void classifySelf ()
         {
             // we do need to compute the interior angle

@@ -35,5 +35,10 @@ namespace PolygonTriangulation
             vertexManager.performTriangulation();
         }
 
+        private void btnStartOver_Click(object sender, EventArgs e)
+        {
+            polygonBox.CreateGraphics().Clear(Color.White);
+            vertexManager = new PolygonVertexManager(polygonBox);
+        }
     }
 }
