@@ -38,7 +38,7 @@ namespace PolygonTriangulation
 
             pv.index = vertices.Count;
             vertices.Add(pv);
-            graphics.FillEllipse(Brushes.Black, pv.X, (polygonBox.Height - pv.Y), 5, 5);
+            graphics.FillEllipse(Brushes.Black, pv.X -5 , (polygonBox.Height - pv.Y - 5), 10, 10);
             if (vertices.Count > 1)
             {
                 PolygonVertex prevVertex = vertices[vertices.Count - 2];
@@ -112,7 +112,7 @@ namespace PolygonTriangulation
                         b = Brushes.Black;
                         break;
                 }
-                graphics.FillEllipse(b, v.X, polygonBox.Height - v.Y, 10, 10);
+                graphics.FillEllipse(b, v.X - 5 , polygonBox.Height - v.Y - 5, 10, 10);
 
             }
             // TODO: самопересечение которое образуется при звершении построения
@@ -155,7 +155,10 @@ namespace PolygonTriangulation
         public void monotonePolygonPartition()
         {  
             // needed data structures
+            //
+        
             ConcurrentPriorityQueue.ConcurrentPriorityQueue<PolygonVertex, double> queue = constructVertexQueue();
+
             // helper for edge
             helpers = new Dictionary<PolygonEdge, PolygonVertex>();
 
