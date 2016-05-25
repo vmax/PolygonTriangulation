@@ -48,6 +48,7 @@
             // 
             // btnDoTriangulate
             // 
+            this.btnDoTriangulate.Enabled = false;
             this.btnDoTriangulate.Location = new System.Drawing.Point(606, 378);
             this.btnDoTriangulate.Name = "btnDoTriangulate";
             this.btnDoTriangulate.Size = new System.Drawing.Size(156, 60);
@@ -58,6 +59,7 @@
             // 
             // btnFinishBuilding
             // 
+            this.btnFinishBuilding.Enabled = false;
             this.btnFinishBuilding.Location = new System.Drawing.Point(606, 313);
             this.btnFinishBuilding.Name = "btnFinishBuilding";
             this.btnFinishBuilding.Size = new System.Drawing.Size(156, 60);

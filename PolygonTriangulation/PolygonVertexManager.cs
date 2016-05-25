@@ -18,6 +18,11 @@ namespace PolygonTriangulation
 
         Dictionary<PolygonEdge, PolygonVertex> helpers;
 
+        public int VertexCount { get
+            {
+                return vertices.Count;
+            } }
+
         public PolygonVertexManager(PictureBox polygonPictureBox)
         {
             vertices = new List<PolygonVertex>();
@@ -26,8 +31,9 @@ namespace PolygonTriangulation
             T = new HashSet<PolygonEdge>();
             polygonBox = polygonPictureBox;
             graphics = polygonBox.CreateGraphics();
+            graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         }
-
+         
         public void addVertex(PolygonVertex pv)
         {
             if (vertices.Count > 2 && checkCrossing(pv))
@@ -134,11 +140,22 @@ namespace PolygonTriangulation
 
         public void performTriangulation ()
         {
+            if (!orientation(vertices[0], vertices[1], vertices[2]))
+            {
+                // polygon is oriented clockwise
+                // reorder it so we can perform triangulation
+                vertices.Reverse();
+                reorderPolygon(vertices);
+                edges.Clear();
+                for (int i = 1; i < vertices.Count; i++)
+                {
+                    edges.Add(new PolygonEdge(vertices[i-1], vertices[i]));
+                }
+                edges.Add(new PolygonEdge(vertices[vertices.Count - 1], vertices[0]));
+            }
             performVerticesClassification();
             monotonePolygonPartition();
             var monotonePolygons = splitIntoMonotonous();
-
-            var origDiag = addedDiagonals;
 
             foreach (var polygon in monotonePolygons.Where(polygon => polygon.Count > 3))
             {
@@ -321,12 +338,7 @@ namespace PolygonTriangulation
             first.neighboor1 = last;
 
             edges.Add(new PolygonEdge(last, first));
-            // FIXME: disable but don't clear drawed things
-        }
-
-        private int LeftTurnPredicate(PolygonVertex a, PolygonVertex b, PolygonVertex c)
-        {
-            return Math.Sign((c.X - a.X) * (b.Y - a.Y) - (c.Y - a.Y) * (b.X - a.X));
+            
         }
 
         private bool orientation(PolygonVertex a, PolygonVertex b, PolygonVertex c)
@@ -475,28 +487,4 @@ namespace PolygonTriangulation
 
         }
 
-
-
-        /*
-            private void triangulateMonotonePolygon()
-            {
-                List<PolygonVertex> V = vertices.OrderByDescending(v => v.Y).ToList();
-                Stack<PolygonVertex> S = new Stack<PolygonVertex>();
-
-                S.Push(V[0]);
-                S.Push(V[1]);
-
-                for (int i = 3; i < V.Count; i++)
-                {
-                    PolygonVertex v = V[i];
-                    while (S.Count > 0)
-                    {
-                        PolygonVertex vv = S.Peek();
-                        insertDiagonal(vv, v, Pens.Red);
-                        S.Pop();
-                    }
-                    S.Push(v);
-                }
-            }*/
-    }
-}
+    }}
